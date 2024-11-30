@@ -100,17 +100,8 @@ def getTop3TripStationsEachDayLast2Weeks(df, tag):
 
 def doMalesOrFemalesTakeLongerTripsOnAverage(df, tag):
     if "gender" in df.columns:
-        df = df.fillna({"gender": -1}).filter(F.col("gender") != -1)
+        df = df.na.replace("NaN", "Unknown").filter(F.col("gender") != "Unknown")
         df = df.withColumn('trip_duration', F.unix_timestamp(F.to_timestamp('end_time', 'yyyy-MM-dd HH:mm:ss')) - F.unix_timestamp(F.to_timestamp('start_time', 'yyyy-MM-dd HH:mm:ss')))
-        print("YOUSSEF")
-        df.select("gender", "trip_duration").show()
-        print("YOUSSEF")
-        df.groupBy("gender").count().show()
-        print("YOUSSEF")
-        df.select("gender").distinct().show()
-        print("YOUSSEF")
-        df.show(10)
-        print("YOUSSEF")
         avg_M_or_F = df.groupBy('gender').agg(F.avg('trip_duration').alias('average_trip_duration'))
         saveAsCSV(avg_M_or_F, 'AvgTripDurationByGender', tag)
     else:
@@ -168,22 +159,22 @@ def main():
     )
     df2020Q1 = df2020Q1.fillna({"to_station_name": "Unknown"})
     df2019Q4 = df2019Q4.fillna({"to_station_name": "Unknown"})
-    df2020Q1.show(5)
     print("-------------------------Placeholder-------------------------")
-    getAverageTrip(df2020Q1, "2020Q1")#works
-    getTripsEachDay(df2020Q1, "2020Q1")#works
-    getMostPopStartingTripStationEachMonth(df2020Q1, "2020Q1")#works
-    getTop3TripStationsEachDayLast2Weeks(df2020Q1, "2020Q1")#works
+    #2020 Q1 data
+    getAverageTrip(df2020Q1, "2020Q1")
+    getTripsEachDay(df2020Q1, "2020Q1")
+    getMostPopStartingTripStationEachMonth(df2020Q1, "2020Q1")
+    getTop3TripStationsEachDayLast2Weeks(df2020Q1, "2020Q1")
     doMalesOrFemalesTakeLongerTripsOnAverage(df2020Q1, "2020Q1")
-    top10AgesLongestTripTakers(df2020Q1, "2020Q1")#works
-    top10AgesShortestTripTakers(df2020Q1, "2020Q1")#wworks
+    top10AgesLongestTripTakers(df2020Q1, "2020Q1")
+    top10AgesShortestTripTakers(df2020Q1, "2020Q1")
     print("-------------------------Placeholder-------------------------")
     #2019 Q4 data
     getAverageTrip(df2019Q4, "2019Q4")
     getTripsEachDay(df2019Q4, "2019Q4")
     getMostPopStartingTripStationEachMonth(df2019Q4, "2019Q4")
     getTop3TripStationsEachDayLast2Weeks(df2019Q4, "2019Q4")
-    doMalesOrFemalesTakeLongerTripsOnAverage(df2019Q4, "2019Q4")#problem
+    doMalesOrFemalesTakeLongerTripsOnAverage(df2019Q4, "2019Q4")
     top10AgesLongestTripTakers(df2019Q4, "2019Q4")
     top10AgesShortestTripTakers(df2019Q4, "2019Q4")
     print("-------------------------Placeholder-------------------------")
